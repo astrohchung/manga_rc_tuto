@@ -1,4 +1,6 @@
 *.fits
 *.fits.gz
 *.png
+!gal_rot.png
 !Mun1.30Zp*.fits
+!*SAVED.fits

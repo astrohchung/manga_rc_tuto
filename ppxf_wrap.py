@@ -1,3 +1,6 @@
+import numpy as np
+from astropy.io import fits
+import glob
 from ppxf import ppxf
 import ppxf_util as util
 class ppxf_wrap():
@@ -68,6 +71,11 @@ class ppxf_wrap():
         noise = noise[nmask]/np.median(flux)
         lam_gal=lam_gal[nmask]
         goodpixels = util.determine_goodpixels(np.log(lam_gal), self.lamRange_temp, 0)
+
+        if not np.all(np.isfinite(galaxy)):
+            return False
+        if not np.all((noise > 0) & np.isfinite(noise)):
+            return False
 
 # Gas emission lines are excluded from the pPXF fit using the GOODPIXELS keyword.
 #         vel = c*np.log(1 + z)   # eq.(8) of Cappellari (2017)
