@@ -1,1 +1,4 @@
-#*.fits.gz
+*.fits
+*.fits.gz
+*.png
+!Mun1.30Zp*.fits
