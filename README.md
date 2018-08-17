@@ -31,4 +31,3 @@
     </code></pre> 
   * Run Jupyter Notebook. Check this link: https://jupyter-notebook-beginner-guide.readthedocs.io/en/latest/execute.html
   * Open "manga_rc_tuto.ipynb" jupyter notebook file.
-
