@@ -2,15 +2,16 @@
 
 ## REQUIRED PACKAGES:
   packages with lower than below versions would also work.  
-  NUMPY: v1.14.3
-  SCIPY: v1.1.0
-  MATPLOTLIB: v2.2.2
-  ASTROPY: v3.0.4
-  PPXF: v6.7.1 (included in the distribution)
+  * PYTHON: v3.6.5 
+  * NUMPY: v1.14.3
+  * SCIPY: v1.1.0
+  * MATPLOTLIB: v2.2.2
+  * ASTROPY: v3.0.4
+  * PPXF: v6.7.1 (included in the distribution)
   
 ## INSTALLATION:
 ### For Python beginners or Windows user
-  * Download and install the latest Anaconda distribution from here: https://www.anaconda.com/download/
+  * Download and install the latest Anaconda distribution (64bit, Python 3.6 version) from here: https://www.anaconda.com/download/
   * Windows:
     * Download this repository by clicking "Clone or Download" - "Download ZIP" in this page
     * Unzip the downloaded ZIP file. (Recommended directory for Windows users: Documents)
