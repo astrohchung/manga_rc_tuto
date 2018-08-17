@@ -1,6 +1,9 @@
 *.fits
 *.fits.gz
 *.png
+manga_rc_tuto_mass.ipynb
 !gal_rot.png
 !Mun1.30Zp*.fits
 !*SAVED.fits
+.ipynb_checkpoints
+.ipynb_checkpoints/*
