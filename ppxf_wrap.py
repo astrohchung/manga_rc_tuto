@@ -18,10 +18,7 @@ class ppxf_wrap():
         specres=specres/(1+redshift)
         
 # Only use the wavelength range in common between galaxy and stellar library.
-#         mask = (t['loglam'] > np.log10(3540)) & (t['loglam'] < np.log10(7409))     
         mask = (wave > 3540) & (wave < 7409)
-        mask = (wave > 3850) & (wave < 7309)
-#         loglam_gal = np.log10(wave[mask])
         lam_gal = wave[mask]
         specres=specres[mask]
 
