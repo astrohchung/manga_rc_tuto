@@ -10,7 +10,7 @@
   * PPXF: v6.7.1 (included in the distribution)
   
 ## INSTALLATION:
-### For Python beginners or Windows user
+### For Python beginners or Windows users
   1. Download and install the latest Anaconda distribution (64bit, Python 3.6 version) from here: https://www.anaconda.com/download/
   2. Download tutorial code.
   * Windows:
@@ -23,7 +23,7 @@
       </code></pre>
   3. Run Jupyter Notebook. Check this link: https://jupyter-notebook-beginner-guide.readthedocs.io/en/latest/execute.html
   4. Open "manga_rc_tuto.ipynb" jupyter notebook file.
-### For Python intermediate and experts
+### For Python intermediates and experts
   1. Update Numpy, Scipy, and Matplotlib packages.
   2. Install Astropy, if not installed. Astropy install instruction: https://astropy.readthedocs.io/en/v0.3/install.html
   3. Install Git, if not installed. Git install instruction: https://git-scm.com/book/en/v2/Getting-Started-Installing-Git
