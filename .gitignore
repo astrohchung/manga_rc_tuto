@@ -1,6 +1,8 @@
 *.fits
 *.fits.gz
 *.png
+__pycache__
+__pycache__/*
 manga_rc_tuto_mass.ipynb
 !gal_rot.png
 !Mun1.30Zp*.fits
