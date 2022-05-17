@@ -1,8 +1,15 @@
+#modified from pPXF example file (ppxf_example_kinematics_sdss.py)
+#make the code as class, so that it loads the galaxy templates only one time and re-use the templates for each pPXF fitting on each MaNGA spaxel.
+
 import numpy as np
 from astropy.io import fits
 import glob
-from ppxf import ppxf
-import ppxf_util as util
+from os import path
+import ppxf as ppxf_package
+from ppxf.ppxf import ppxf
+import ppxf.ppxf_util as util
+
+
 def airtovac(wave_air):
     wave_vac=wave_air.copy()
     for i in range(2):
@@ -14,23 +21,32 @@ def airtovac(wave_air):
 class ppxf_wrap():
     def __init__(self, redshift, wave, specres):
         wave=wave/(1+redshift) #  When measure velocity from IFS observation, 
-                                        # deredshift to the barycenter should be applied before measuement.
+                               # deredshift to the barycenter should be applied before measuement.
         specres=specres/(1+redshift)
         
 # Only use the wavelength range in common between galaxy and stellar library.
-        mask = (wave > 3540) & (wave < 7409)
-        lam_gal = wave[mask]
-        specres=specres[mask]
+        wave_mask = (wave > 3700) & (wave < 7400)
+        lam_gal = wave[wave_mask]
+        specres=specres[wave_mask]
 
         c = 299792.458                  # speed of light in km/s
         frac = lam_gal[1]/lam_gal[0]    # Constant lambda fraction per pixel
         fwhm_gal=lam_gal/specres          # Resolution FWHM of every pixel, in Angstroms
         velscale = np.log(frac)*c       # Constant velocity scale in km/s per pixel
 
+#         file_dir='../miles_models/'
         file_dir='./'
         galaxy_templates=glob.glob(file_dir+'Mun1.30Z*.fits')
+
+#         miles_models_dir = path.dirname(path.realpath(ppxf_package.__file__))+'/miles_models/'
+#         galaxy_templates=['Mun1.30Zp0.00T01.9953_iPp0.00_baseFe_linear_FWHM_2.51.fits',
+#                           'Mun1.30Zp0.00T10.0000_iPp0.00_baseFe_linear_FWHM_2.51.fits',
+#                          ]
+        print('List of galaxy template files: ',galaxy_templates)
+
         fwhm_tem=2.51 # Vazdekis+10 spectra have a constant resolution FWHM of 2.51A.
-        hdu = fits.open(galaxy_templates[0])
+#         hdu = fits.open(miles_models_dir+galaxy_templates[0])
+        hdu = fits.open(file_dir+galaxy_templates[0])
         ssp = hdu[0].data
         h2 = hdu[0].header
         lam_temp = h2['CRVAL1'] + h2['CDELT1']*np.arange(h2['NAXIS1'])
@@ -50,7 +66,8 @@ class ppxf_wrap():
         dv = np.log(lam_temp[0]/lam_gal[0])*c    # km/s
         
         for j, fname in enumerate(galaxy_templates):
-            hdu = fits.open(fname)
+#             hdu = fits.open(miles_models_dir+fname)
+            hdu = fits.open(file_dir+fname)
             ssp = hdu[0].data
             ssp = util.gaussian_filter1d(ssp, sigma)  # perform convolution with variable sigma
             sspNew = util.log_rebin(lamRange_temp, ssp, velscale=velscale)[0]
@@ -59,41 +76,52 @@ class ppxf_wrap():
         self.templates=templates
         self.flux=None
         self.ivar=None
-        self.mask=mask
+        self.mask=None
+        self.wave_mask=wave_mask
         self.lam_gal=lam_gal
+        self.goodpixels=goodpixels
+        self.redshift=redshift
         self.dv=dv
         self.goodpixels=goodpixels
         self.velscale=velscale
+
         
-        
-    def run(self):
+    def run(self):        
         c = 299792.458                  # speed of light in km/s
-        flux=(self.flux)[self.mask]
-        noise=(self.ivar**(-0.5))[self.mask]
+        meps=np.finfo('float64').eps
         
+        dv=self.dv
+        velscale=self.velscale
         templates=self.templates
         lam_gal=self.lam_gal
-        dv=self.dv
-        goodpixels=self.goodpixels
-        velscale=self.velscale
-    
-        galaxy = flux/np.median(flux)   # Normalize spectrum to avoid numerical issues
-        noise = noise/np.median(flux)
+        mask=self.mask
+        wave_mask=self.wave_mask
+        
+        use_mask=mask[wave_mask]
+        flux=((self.flux)[wave_mask])
+        noise=((self.ivar**(-0.5))[wave_mask])
 
-        if not np.all(np.isfinite(galaxy)):
-            return False
-        if not np.all((noise > 0) & np.isfinite(noise)):
-            return False
+        nonzero_finite_bool=use_mask & (noise > 0) & (np.isfinite(noise)) & (np.isfinite(flux)) 
+        igoodpixels=np.zeros(len(lam_gal)).astype(int)
+        igoodpixels[self.goodpixels]=1  
+        maskpixels=(igoodpixels & nonzero_finite_bool) > 0 
+        
+#         noise[(noise <= 0) | ~np.isfinite(noise)]=meps
+        noise[(noise <= 0)]=meps
+        noise[~np.isfinite(noise)]=meps
+        
+        galaxy = flux/np.median(flux[maskpixels])   # Normalize spectrum to avoid numerical issues
+        noise = noise/np.median(flux[maskpixels])
+        medsn = np.median(galaxy[maskpixels]/noise[maskpixels])
+
 
 # Gas emission lines are excluded from the pPXF fit using the GOODPIXELS keyword.
 #         vel = c*np.log(1 + z)   # eq.(8) of Cappellari (2017)
         start = [0, 200.]  # (km/s), starting guess for [V, sigma]
-        
+
         adegree=0
         mdegree=0
         pp=ppxf(templates, galaxy, noise, velscale, start,
-                  goodpixels=goodpixels, plot=False, quiet=True, moments=2,
+                  mask=maskpixels, plot=False, quiet=True, moments=2,
                   degree=adegree, mdegree=mdegree, vsyst=dv, clean=False, lam=lam_gal)
-        self.fflux=galaxy
         return pp
-

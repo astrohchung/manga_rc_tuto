@@ -1,13 +1,17 @@
 # Tutorial: Plot Galaxy Rotation Curve with MaNGA data
 
-## REQUIRED PACKAGES:
-  packages with lower than below versions would also work.  
-  * PYTHON: v3.6.5 
-  * NUMPY: v1.14.3
-  * SCIPY: v1.1.0
-  * MATPLOTLIB: v2.2.2
-  * ASTROPY: v3.0.4
-  * PPXF: v6.7.1 (included in the distribution)
+Author: Haeun Chung (haeunchung@email.arizona.edu)
+
+Last update: May 17, 2022
+
+## Required packages
+* NUMPY: v1.22.3
+* SCIPY: v1.8.0
+* MATPLOTLIB: v3.5.2
+* ASTROPY: v5.0.4
+* PPXF: v8.0.2 ()
+
+
   
 ## INSTALLATION:
 ### For Python beginners or Windows users
